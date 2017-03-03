@@ -1,0 +1,32 @@
+_schema-version: '2.0'
+ID: DKOM_PYTHON_SERVICE
+version: 0.0.2
+
+modules:
+ - name: DB
+   type: hdb
+   path: DB
+   requires:
+    - name: hdi-container
+      properties:
+        TARGET_CONTAINER: ~{hdi-container-name}
+    - name: CrossSchemaService
+    
+# - name: python
+#   type: java
+#   path: python
+#   requires:
+#    - name: hdi-container
+#      properties:
+#        TARGET_CONTAINER: ~{hdi-container-name}
+ 
+resources:
+ - name: hdi-container
+   properties:
+      hdi-container-name: ${service-name}
+   type: com.sap.xs.hdi-container
+
+ - name: CrossSchemaService
+   type: org.cloudfoundry.existing-service
+   parameters:
+      service-name: CROSS_SCHEMA_ACCESS_SERVICE

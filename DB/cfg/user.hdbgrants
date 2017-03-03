@@ -1,0 +1,20 @@
+{
+  "CROSS_SCHEMA_ACCESS_SERVICE": {
+    "object_owner" : {
+      "schema_privileges":[
+        { 
+          "reference":"USR_4JS1EI5192ALIGS7L3SF9XC72",
+          "privileges_with_grant_option":["SELECT"]
+        }
+      ]
+    },
+     "application_user" : {
+      "schema_privileges":[
+        { 
+          "reference":"USR_4JS1EI5192ALIGS7L3SF9XC72", 
+          "privileges_with_grant_option":["SELECT"]
+        }
+      ]
+    }
+  }
+}

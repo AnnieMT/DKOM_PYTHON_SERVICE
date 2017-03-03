@@ -1,0 +1,69 @@
+PROCEDURE "DKOM_XSJS_SERVICE_1.DB.procedures::get_rating" ( 
+	IN V_PARTY_ID BIGINT,
+    IN V_EXTERNAL_RATING_WEIGHT DOUBLE,
+    IN V_NETWORK_RATING_WEIGHT DOUBLE,
+    OUT V_RATING DOUBLE,
+    OUT V_MESSAGE VARCHAR(5000)
+	)
+	LANGUAGE SQLSCRIPT AS
+	--SQL SECURITY INVOKER
+	--DEFAULT SCHEMA <default_schema_name>
+	--READS SQL DATA AS
+BEGIN
+   /*************************************
+       Write your procedure logic 
+   *************************************/
+	DECLARE V_EXTERNAL_RATING DOUBLE;
+	DECLARE V_SMALLEST_NETWORK_RATING DOUBLE;
+
+  -- retrieve external rating for the given party
+  SELECT "rating" INTO V_EXTERNAL_RATING FROM "DKOM_XSJS_SERVICE_1.DB::parties" WHERE "id" = :V_PARTY_ID;
+
+	-- retrieve smallest rating from the transaction network of the given party
+	-- using traditional SQL query: LIMITED NETWORK RADIUS!!! = 7 (biggest in our demo data)
+	WITH EUT AS (
+	  SELECT t."creditor", t."debtor", p."rating"
+	  FROM "demo"."transactions" t JOIN "demo"."parties" p ON p."id" = t."debtor"
+	  UNION
+	  SELECT t."debtor" AS "creditor", t."creditor" AS "debtor", p."rating"
+	  FROM "demo"."transactions" t JOIN "demo"."parties" p ON p."id" = t."creditor"  
+	),
+	JOINS AS (
+	  SELECT t1."rating" AS "rating1", t2."rating" AS "rating2", t3."rating" AS "rating3",
+	         t4."rating" AS "rating4", t5."rating" AS "rating5", t6."rating" AS "rating6",
+	         t7."rating" AS "rating7"
+	  FROM EUT t1
+	    LEFT OUTER JOIN EUT t2 ON t1."debtor" = t2."creditor"
+	    LEFT OUTER JOIN EUT t3 ON t2."debtor" = t3."creditor"
+	    LEFT OUTER JOIN EUT t4 ON t3."debtor" = t4."creditor"
+	    LEFT OUTER JOIN EUT t5 ON t4."debtor" = t5."creditor"
+	    LEFT OUTER JOIN EUT t6 ON t5."debtor" = t6."creditor"
+	    LEFT OUTER JOIN EUT t7 ON t6."debtor" = t7."creditor"
+	    WHERE t1."creditor" = :V_PARTY_ID)
+	SELECT MIN("rating") INTO V_SMALLEST_NETWORK_RATING
+	FROM (
+	  SELECT MIN("rating1") AS "rating" FROM JOINS
+	  UNION
+	  SELECT MIN("rating2") AS "rating" FROM JOINS
+	  UNION
+	  SELECT MIN("rating3") AS "rating" FROM JOINS
+	  UNION
+	  SELECT MIN("rating4") AS "rating" FROM JOINS
+	  UNION
+	  SELECT MIN("rating5") AS "rating" FROM JOINS
+	  UNION
+	  SELECT MIN("rating6") AS "rating" FROM JOINS
+	  UNION
+	  SELECT MIN("rating7") AS "rating" FROM JOINS
+	);
+	------------------- REPLACE WITH THE NEW GRAPH SQL ----------------------------------------
+    -- using the SAP HANA Graph functionality UNLIMITED NETWORK RADIUS!!!
+	 -- SELECT MIN("rating") INTO V_SMALLEST_NETWORK_RATING FROM "DKOM_XSJS_SERVICE_1.DB::parties"
+	 --   WHERE "id" IN 
+	 --     (SELECT "id" FROM "DKOM_XSJS_SERVICE_1.DB.graph::neighbourhood" (placeholder."$$startVertex$$" => '[' || :V_PARTY_ID || ']' ));
+	--------------------------------------------------------------------------------
+  -- calculate the weighted average
+  V_RATING = ROUND((:V_EXTERNAL_RATING * :V_EXTERNAL_RATING_WEIGHT + :V_SMALLEST_NETWORK_RATING * :V_NETWORK_RATING_WEIGHT) / (:V_EXTERNAL_RATING_WEIGHT + :V_NETWORK_RATING_WEIGHT));
+  V_MESSAGE = '{ "externalRating": ' || :V_EXTERNAL_RATING || ', "networkRating": ' || :V_SMALLEST_NETWORK_RATING ||
+    ', "externalRatingWeight": ' || :V_EXTERNAL_RATING_WEIGHT || ', "networkRatingWeight": ' || :V_NETWORK_RATING_WEIGHT || '}';
+END;

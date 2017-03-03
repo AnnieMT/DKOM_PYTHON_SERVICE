@@ -1,0 +1,10 @@
+---
+applications:
+- name: DKOM_PYTHON_SERVICE_
+  host: DKOM_PYTHON_SERVICE_
+  buildpack: python_buildpack
+  command: python server.py
+  memory: 512M
+  services:
+    - hdi-container
+    

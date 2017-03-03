@@ -1,0 +1,9 @@
+---
+applications:
+- name: DKOM_PYTHON_SERVICE
+  host: DKOM_PYTHON_SERVICE
+  buildpack: python_buildpack
+  memory: 512M
+  services:
+   - XSA_ADMIN-fkghh5rs8mb4iq0r-DKOM_PYTHON_SERVICE-hdi-container
+

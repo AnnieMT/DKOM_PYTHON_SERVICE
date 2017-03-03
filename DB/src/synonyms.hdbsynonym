@@ -1,0 +1,14 @@
+{
+  "DKOM_XSJS_SERVICE_1.DB::parties": {
+    "target": {
+      "schema": "USR_4JS1EI5192ALIGS7L3SF9XC72",
+      "object": "parties"
+    }
+  },
+  "DKOM_XSJS_SERVICE_1.DB::transactions": {
+    "target": {
+      "schema": "USR_4JS1EI5192ALIGS7L3SF9XC72",
+      "object": "transactions"
+    }
+  }
+}

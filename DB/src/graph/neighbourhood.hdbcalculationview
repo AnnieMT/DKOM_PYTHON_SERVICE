@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Calculation:scenario xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:Calculation="http://www.sap.com/ndb/BiModelCalculation.ecore" id="DKOM_XSJS_SERVICE_1.DB.graph::neighbourhood" applyPrivilegeType="NONE" dataCategory="CUBE" schemaVersion="3.0" defaultClient="$$client$$" visibility="reportingEnabled" outputViewType="Projection" calculationScenarioType="TREE_BASED" cacheInvalidationPeriod="NONE" enforceSqlExecution="false">
+<descriptions defaultDescription="neighborhood"/>
+<localVariables>
+  <variable id="startVertex" parameter="true">
+    <descriptions defaultDescription="startVertex"/>
+    <variableProperties datatype="VARCHAR" length="13" mandatory="true">
+      <valueDomain type="empty"/>
+      <selection multiLine="false"/>
+      <defaultRange/>
+    </variableProperties>
+  </variable>
+</localVariables>
+<variableMappings/>
+<dataSources/>
+<calculationViews>
+  <calculationView xsi:type="Calculation:GraphView" id="Graph_1" workspace="DKOM_XSJS_SERVICE_1.DB.graph::graph" action="GET_NEIGHBORHOOD" partitionedExecution="false">
+    <viewAttributes>
+      <viewAttribute id="id" datatype="BIGINT" length="19" measureType="simple"/>
+      <viewAttribute id="DEPTH" datatype="INTEGER" measureType="simple"/>
+    </viewAttributes>
+    <calculatedViewAttributes/>
+    <restrictedViewAttributes/>
+    <getNeighborhoodParameterization>
+      <startVerticesParameter>startVertex</startVerticesParameter>
+      <direction>outgoing</direction>
+      <minDepth>0</minDepth>
+      <maxDepth>10</maxDepth>
+    </getNeighborhoodParameterization>
+  </calculationView>
+</calculationViews>
+<logicalModel id="Graph_1">
+  <attributes/>
+  <calculatedAttributes/>
+  <baseMeasures>
+    <measure id="id" order="1" aggregationType="sum" measureType="simple">
+      <descriptions defaultDescription="id"/>
+      <measureMapping columnObjectName="Graph_1" columnName="id"/>
+    </measure>
+    <measure id="DEPTH" order="2" aggregationType="sum" measureType="simple">
+      <descriptions defaultDescription="DEPTH"/>
+      <measureMapping columnObjectName="Graph_1" columnName="DEPTH"/>
+    </measure>
+  </baseMeasures>
+  <calculatedMeasures/>
+  <restrictedMeasures/>
+  <localDimensions/>
+</logicalModel>
+<layout>
+  <shapes>
+    <shape expanded="true" modelObjectName="Output" modelObjectNameSpace="MeasureGroup">
+      <upperLeftCorner x="40" y="85"/>
+    </shape>
+    <shape expanded="true" modelObjectName="Graph_1" modelObjectNameSpace="CalculationView">
+      <upperLeftCorner x="100" y="243"/>
+      <rectangleSize height="30" width="140"/>
+    </shape>
+  </shapes>
+</layout>
+</Calculation:scenario>
